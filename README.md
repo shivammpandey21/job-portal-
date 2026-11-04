@@ -1,66 +1,143 @@
-# Job Portal (Core PHP + MySQL)
+Job Portal Website
+A job portal application built with Core PHP 8, MySQL, PDO, Bootstrap 5, and Chart.js. The project is designed for three types of users: Admin, Job Seeker, and Employer.
+Repository status: The current GitHub repository contains the files listed below, but its entry-point and setup scripts reference additional folders that are not currently visible in the repository root. See Important setup note before trying to run it.
 
-A job portal with three roles (Admin, Job Seeker, Employer) built with Core PHP 8 (OOP, custom MVC), PDO/MySQL, Bootstrap 5 and Chart.js.
+Features
+Job Seeker
+- Register and log in.
+- Manage a personal profile and profile picture.
+- Upload and manage resumes (PDF, DOC, and DOCX).
+- Search and filter job listings.
+- Apply for jobs and track application status.
+- Save/bookmark jobs.
+- Receive notifications.
+Employer
+- Register and associate an account with a company.
+- Manage company details and logo.
+- Create, edit, close, and delete job listings.
+- Submit job listings for administrator approval.
+- View applicants and access applicant resumes.
+- Update application statuses.
+- View hiring statistics.
+Administrator
+- View dashboard statistics.
+- Manage job seeker and employer accounts.
+- Suspend or delete accounts.
+- Approve, reject, edit, feature, and delete job listings.
+- Manage job categories.
+- View applications.
+- Manage website page content.
+- Read contact form messages.
+- View reports and charts.
+Public Website
+- Homepage with latest and featured jobs.
+- Job listing, search, filters, and pagination.
+- Job detail pages.
+- Company pages.
+- About and Contact pages.
+- Custom 404 page.
+Technology Stack
+Technology	Purpose
+PHP 8.1+	Server-side application
+MySQL 5.7+ / MariaDB 10.3+	Relational database
+PDO	Database access
+HTML5 and CSS3	Page structure and styling
+JavaScript	Frontend interactions
+Bootstrap 5	Responsive interface
+Chart.js	Dashboard charts
+Apache	Local web server
 
-> **Status:** all modules are written, but this code has **not been executed or tested yet** (it was authored in an environment without PHP/MySQL).
-> Work through `TESTING.md`, fix anything that fails, and only then deploy (`DEPLOYMENT.md`). Screenshots and a live URL must come from your own run: none are included.
 
-## Features
-**Job seeker:** register/login, profile + picture, up to 5 resumes (PDF/DOC/DOCX), search & filter jobs, apply (no duplicates), track status (Pending, Reviewed, Shortlisted, Rejected, Hired), save/bookmark jobs, notifications.
-**Employer:** register with company, company profile + logo, post/edit/close/delete jobs (admin approval), view applicants, download resumes, change status, hiring stats.
-**Admin:** live dashboard stats, manage job seekers/employers (suspend/delete), approve/reject/edit/feature/delete jobs, manage categories, view all applications, edit website content (About page), read contact messages, reports with charts.
-**Public:** home (latest + featured jobs, categories), job listing/search with pagination, job details, company pages, About, Contact, 404.
+Files Currently Visible in the Repository
+job-portal-/
+├── README.md
+├── index.php
+├── app.php
+├── database.php
+├── web.php
+├── create_admin.php
+├── seed_demo.php
+├── job_portal.sql
+├── env.example
+├── style.css
+├── app.js
+└── placeholder.svg
+The repository also currently contains php-error.log. Error logs should generally not be committed because they can expose paths or application details.
+Database
+The SQL schema creates a database named job_portal and defines these tables:
+Table	Purpose
+users	User accounts and roles
+job_seekers	Job seeker profiles
+companies	Company information
+employers	Employer accounts
+job_categories	Job categories
+jobs	Job listings
+resumes	Uploaded resume records
+applications	Job applications
+saved_jobs	Bookmarked jobs
+notifications	User notifications
+contact_messages	Contact form submissions
+pages	Editable website pages
 
-## Requirements
-PHP 8.1+ (required extensions: pdo_mysql, fileinfo, gd; zip recommended), MySQL 5.7+/MariaDB 10.3+, Apache with `mod_rewrite` and `AllowOverride All`.
 
-## Installation (local, e.g. XAMPP)
-1. Place the folder at `htdocs/job-portal`.
-2. Import the database: `mysql -u root -p < database/job_portal.sql` (or phpMyAdmin > Import).
-3. `cp .env.example .env` and set `DB_*` and `APP_BASE_PATH=/job-portal`.
-4. Create the admin: `php scripts/create_admin.php "Admin" admin@example.com` (password is prompted, min 10 chars).
-5. Make `public/uploads/*` and `storage/` writable by the web server. Keep `storage/resumes` private and do not expose it through Apache.
-6. Open `http://localhost/job-portal/`. The project root `.htaccess` forwards requests into `public/`; ensure Apache `mod_rewrite` and `AllowOverride All` are enabled.
+The schema uses InnoDB, utf8mb4, foreign keys, and unique constraints. A unique constraint on (job_id, job_seeker_id) prevents duplicate applications.
+Warning: The SQL script includes DROP TABLE IF EXISTS statements. Importing it into an existing job_portal database can delete the existing tables and their data. Back up your database before importing.
 
-There are **no default credentials**: you choose the admin password in step 4.
+Requirements
+- PHP 8.1 or newer.
+- MySQL 5.7+ or MariaDB 10.3+.
+- Apache (XAMPP is suitable for local development).
+- PHP extensions: pdo_mysql, fileinfo, and gd; zip is recommended.
+- Apache mod_rewrite and AllowOverride All for the intended routed application.
+Installation with XAMPP
+1. Install XAMPP and start Apache and MySQL.
+2. Clone or download this repository into your XAMPP htdocs directory:
+   git clone https://github.com/shivammpandey21/job-portal-.git
+3. Create/import the database using phpMyAdmin:
+   - Open http://localhost/phpmyadmin/.
+   - Choose Import.
+   - Select job_portal.sql.
+   - Confirm the import.
+   The SQL file creates the job_portal database itself.
+4. Copy env.example to .env and set the database values for your local environment. The database configuration reads values such as:
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=job_portal
+   DB_USERNAME=root
+   DB_PASSWORD=
+5. Configure the Apache document root and restore the application folders described in the next section before opening the site.
+Important Setup Note
+The current repository root does not contain all the paths referenced by the PHP entry point and helper scripts.
 
-### Optional demo listings
-For a local preview, set `APP_ENV=local` in `.env`, then run `php scripts/seed_demo.php`. This creates fictional sample companies, employer accounts and job listings. The script prints a randomly generated temporary password for any accounts it creates and skips listings already added. Do not run it on production; remove its demo records before deployment.
+For example:
+- index.php expects config/app.php, app/core/helpers.php, app/controllers/, app/models/, and routes/web.php.
+- create_admin.php expects the configuration and database classes under config/ and app/core/; its usage comment refers to scripts/create_admin.php.
+- The root currently shows app.php, database.php, and web.php, rather than those expected directory paths.
+Therefore, the repository as currently uploaded may not run directly in XAMPP. Restore/upload the missing application directories and place each file at the path expected by the code before following the normal run instructions. Do not assume that moving only the root PHP files will fix these dependencies.
 
-## Folder structure
-```
-app/core         Router, Controller, Model, Database, Session, Csrf, Auth, Validator, Upload, helpers
-app/controllers  Auth, Dashboard, Home, Page, Job, Seeker, Employer, Resume, Notification, Admin, Error
-app/models       User, JobSeeker, Employer, Company, Job, Category, Application, Resume, SavedJob, Notification, Page, ContactMessage
-app/views        layouts, auth, home, jobs, pages, seeker, employer, admin, dashboard, errors
-config/          app.php, database.php (read from .env)
-public/          index.php (document root), assets/, uploads/ (images only)
-routes/web.php   all routes
-storage/         logs/, resumes/ (private, outside web access)
-database/job_portal.sql
-```
+Once the expected structure and Apache configuration are in place, the intended local URL is:
+http://localhost/job-portal/
+Admin Account and Demo Data
+The create_admin.php script is intended to create an administrator account from the command line. Its source comment specifies a minimum password length of 10 characters and prompts for the password rather than putting it in the command itself.
 
-## Database tables and relationships
-| Table | Purpose |
-|---|---|
-| users | accounts; `role` = admin / job_seeker / employer; `status` active/suspended |
-| job_seekers | profile, 1:1 with users |
-| employers | recruiter, 1:1 with users, N:1 companies |
-| companies | company profile and logo |
-| job_categories | categories (1:N jobs) |
-| jobs | postings; belongs to company, employer, category; status pending/approved/rejected/closed |
-| resumes | uploaded files per job seeker (stored privately) |
-| applications | job_seeker applies to job with a resume; **UNIQUE(job_id, job_seeker_id)** prevents duplicates |
-| saved_jobs | bookmarks; UNIQUE(job_seeker_id, job_id) |
-| notifications | per-user messages |
-| contact_messages | contact form submissions |
-| pages | admin-editable website content (extra table) |
+The seed_demo.php file is provided for demo data. Review its code and run it only in a local development database. Do not use demo seed data in production.
 
-## Security summary
-PDO prepared statements everywhere (real, non-emulated) - `password_hash`/`password_verify` - CSRF token on every POST - output escaped with `e()` - hardened session cookies + ID regeneration on login - role checks in every controller action - login throttling (session-based) - uploads: size limit, extension + real MIME + content checks, random filenames, images re-encoded with GD, resumes stored outside the web root and served only after an authorisation check, uploads folder cannot execute code - secrets only in `.env` (git-ignored).
-
-## Notes / limits
-- Job edits by employers return the job to *pending* for re-approval.
-- Login throttling is per session; add IP-based limiting at the server/WAF level for production.
-- If a form with a file exceeds `post_max_size`, PHP drops the whole POST and you will see the "session expired" page; raise `upload_max_filesize`/`post_max_size` (>= 8M) if needed.
-\n## Verification notes\n- PHP syntax check: passed for all PHP source files using PHP 8.4 CLI.\n- Database integration, uploads, email delivery and browser-level interaction tests: not run here. Run the full checklist in `TESTING.md` after importing the schema in XAMPP.\n- Configure SMTP or an email provider before enabling production email workflows.\n- Configure HTTPS, production secrets, backups and server-side rate limiting before public deployment.\n
+Because the current repository paths do not match the paths expected by these scripts, verify and correct their locations before running them.
+Security Notes
+The application source describes security measures including:
+- Password hashing and verification.
+- PDO prepared statements.
+- CSRF protection for POST requests.
+- Escaped output.
+- Session hardening and role-based access checks.
+- Upload validation and generated filenames.
+- Private resume storage with authorization checks.
+Before deploying publicly:
+- Use HTTPS.
+- Set production-only secrets and disable debug output.
+- Keep .env, uploaded resumes, and logs out of public web access.
+- Do not commit passwords, credentials, or error logs.
+- Configure backups and server-side rate limiting.
+- Test authentication, authorization, uploads, and database operations.
+Testing Status
+The repository README states that PHP syntax checks passed in its original development environment, but database integration, file uploads, email delivery, and browser-level workflows were not tested there. Run the application locally and verify the full workflow before deployment.
